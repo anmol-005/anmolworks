@@ -2,216 +2,501 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Anmol Kansal | Data Science & AI/ML</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Wave Dash: Rhythm Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        .skill-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
-        html { scroll-behavior: smooth; }
+        body {
+            margin: 0;
+            overflow: hidden;
+            background-color: #050505;
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            touch-action: none;
+            user-select: none;
+            color: white;
+        }
+        canvas { display: block; }
+        .font-game { font-family: 'Arial Black', Gadget, sans-serif; }
+        
+        @keyframes scanline {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(100%); }
+        }
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 10px;
+            background: rgba(255, 255, 255, 0.03);
+            pointer-events: none;
+            z-index: 50;
+            animation: scanline 8s linear infinite;
+        }
+        .vignette {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.5) 100%);
+            pointer-events: none;
+            z-index: 40;
+        }
+        #ui-overlay {
+            z-index: 100;
+        }
     </style>
 </head>
-<body class="bg-[#f8fafc] text-slate-900 font-sans">
+<body>
 
-    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
-        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
-            <span class="font-black text-2xl tracking-tighter text-indigo-600">ANMOL KANSAL.</span>
-            <div class="hidden md:flex space-x-8 text-sm font-bold uppercase tracking-widest text-slate-500">
-                <a href="#about" class="hover:text-indigo-600">About</a>
-                <a href="#skills" class="hover:text-indigo-600">Skills</a>
-                <a href="#experience" class="hover:text-indigo-600">Experience</a>
-                <a href="#education" class="hover:text-indigo-600">Education</a>
-                <a href="#projects" class="hover:text-indigo-600">Projects</a>
-            </div>
-            <a href="mailto:anmolkansal1805@gmail.com" class="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-indigo-700 transition">Hire Me</a>
-        </div>
-    </nav>
+    <div class="scanline"></div>
+    <div class="vignette"></div>
 
-    <section id="about" class="pt-40 pb-24 px-6">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
-            <div>
-                <h1 class="text-6xl font-black leading-tight mb-6">Turning Data into <span class="text-indigo-600 underline decoration-indigo-200">Insights.</span></h1>
-                <p class="text-xl text-slate-600 leading-relaxed mb-8">
-                    Hi, I'm <span class="font-bold text-slate-900">Anmol Kansal</span>. I build intelligent backend systems and data-driven solutions. Currently specializing in 
-                    <span class="text-indigo-600 font-semibold">Generative AI, LLM Orchestration, and Predictive Analytics.</span>
-                </p>
-                <div class="flex gap-4">
-                    <a href="#projects" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition">View My Work</a>
-                    <a href="#contact" class="border-2 border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition">Contact</a>
+    <div id="ui-overlay" class="fixed inset-0 flex flex-col items-center justify-between py-12 pointer-events-none">
+        <!-- Top HUD -->
+        <div id="hud" class="w-full px-8 flex justify-between items-start opacity-0 transition-opacity duration-500">
+            <div class="flex flex-col">
+                <span class="text-xs uppercase tracking-widest opacity-50 font-bold">Progress</span>
+                <div class="w-48 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
+                    <div id="progress-bar" class="h-full bg-white w-0 shadow-[0_0_10px_#fff]"></div>
                 </div>
+                <span id="progress-text" class="text-xs mt-1 font-mono">0%</span>
             </div>
-            <div class="bg-indigo-50 p-8 rounded-[40px] border border-indigo-100">
-                <div class="grid grid-cols-2 gap-4 text-center">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <p class="text-3xl font-bold text-indigo-600">2000+</p>
-                        <p class="text-xs font-bold text-slate-400 uppercase">Connections</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <p class="text-3xl font-bold text-indigo-600">Top 8%</p>
-                        <p class="text-xs font-bold text-slate-400 uppercase">Kaggle Rank</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <p class="text-3xl font-bold text-indigo-600">2</p>
-                        <p class="text-xs font-bold text-slate-400 uppercase">Degrees</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm">
-                        <p class="text-3xl font-bold text-indigo-600">1</p>
-                        <p class="text-xs font-bold text-slate-400 uppercase">GenAI Intern</p>
-                    </div>
-                </div>
+            <div class="text-right">
+                <span class="text-xs uppercase tracking-widest opacity-50 font-bold">Best Attempt</span>
+                <div id="best-score" class="text-xl font-game italic">0%</div>
             </div>
         </div>
-    </section>
 
-    <section id="skills" class="py-24 bg-white">
-        <div class="max-w-6xl mx-auto px-6">
-            <h2 class="text-center text-sm font-black text-indigo-600 uppercase tracking-widest mb-4">The Stack</h2>
-            <h3 class="text-center text-4xl font-black mb-16">Technical Expertise</h3>
+        <!-- Start Screen -->
+        <div id="start-screen" class="pointer-events-auto flex flex-col items-center gap-8">
+            <div class="text-center">
+                <h1 class="text-7xl md:text-8xl font-game italic tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">WAVE<br>DASH</h1>
+                <p class="text-sm tracking-[0.3em] uppercase opacity-50 mt-2">Rhythm Edition</p>
+            </div>
             
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
-                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
-                    <i class="fab fa-python text-3xl text-indigo-600 mb-4"></i>
-                    <h4 class="font-bold mb-2">Languages</h4>
-                    <p class="text-sm text-slate-500">Python, Java, SQL (MySQL), JavaScript</p>
-                </div>
-                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
-                    <i class="fas fa-brain text-3xl text-indigo-600 mb-4"></i>
-                    <h4 class="font-bold mb-2">AI/ML</h4>
-                    <p class="text-sm text-slate-500">Scikit-Learn, NLP, LLMs, Generative AI</p>
-                </div>
-                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
-                    <i class="fas fa-server text-3xl text-indigo-600 mb-4"></i>
-                    <h4 class="font-bold mb-2">Backend</h4>
-                    <p class="text-sm text-slate-500">Flask, FastAPI, LangChain, Celery, Redis</p>
-                </div>
-                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
-                    <i class="fas fa-chart-line text-3xl text-indigo-600 mb-4"></i>
-                    <h4 class="font-bold mb-2">Analysis</h4>
-                    <p class="text-sm text-slate-500">Pandas, NumPy, EDA, Feature Engineering</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="py-24 px-6 bg-slate-50">
-        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16">
+            <button id="start-btn" class="group relative px-12 py-5 bg-white text-black font-black text-xl rounded-full transition-all hover:scale-105 active:scale-95">
+                <span class="relative z-10">START SEQUENCE</span>
+                <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-0 group-hover:opacity-40 transition-opacity"></div>
+            </button>
             
-            <div id="experience">
-                <h3 class="text-3xl font-black mb-10 flex items-center gap-3">
-                    <span class="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-lg"><i class="fas fa-briefcase"></i></span>
-                    Experience
-                </h3>
-                <div class="space-y-8 border-l-2 border-indigo-100 pl-8">
-                    <div class="relative">
-                        <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-indigo-600 border-4 border-white"></div>
-                        <p class="text-xs font-black text-indigo-600 uppercase mb-1">Sep 2025 — Nov 2025</p>
-                        <h4 class="text-xl font-bold">GenAI Backend Intern</h4>
-                        <p class="text-slate-500 font-medium mb-3 italic">Infosys Springboard</p>
-                        <p class="text-sm text-slate-600">Built a real-time competitor tracker using Python & FastAPI. Implemented GenAI logic to process dynamic market data.</p>
-                    </div>
-                    <div class="relative">
-                        <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></div>
-                        <p class="text-xs font-black text-slate-400 uppercase mb-1">Jan 2024 — Aug 2024</p>
-                        <h4 class="text-xl font-bold">Group Leader</h4>
-                        <p class="text-slate-500 font-medium mb-3 italic">IIT Madras (Kanha House)</p>
-                        <p class="text-sm text-slate-600">Led a team of students in a remote environment, fostering leadership and collaborative technical management.</p>
-                    </div>
-                </div>
-            </div>
-
-            <div id="education">
-                <h3 class="text-3xl font-black mb-10 flex items-center gap-3">
-                    <span class="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-lg"><i class="fas fa-graduation-cap"></i></span>
-                    Education
-                </h3>
-                <div class="space-y-8">
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 class="text-lg font-bold">Indian Institute of Technology, Madras</h4>
-                        <p class="text-indigo-600 text-sm font-bold">Bachelor of Science - BS, Data Science</p>
-                        <p class="text-slate-400 text-xs mt-1">2023 — 2027</p>
-                    </div>
-                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
-                        <h4 class="text-lg font-bold">GKCIET</h4>
-                        <p class="text-indigo-600 text-sm font-bold">BTech, CSE (AI-ML)</p>
-                        <p class="text-slate-400 text-xs mt-1">2023 — Present | Grade: 8.2</p>
-                    </div>
-                </div>
-            </div>
-
+            <p class="text-xs opacity-40 uppercase tracking-widest">Hold to ascend / Release to descend</p>
         </div>
-    </section>
 
-    <section id="projects" class="py-24 bg-white px-6">
-        <div class="max-w-6xl mx-auto">
-            <h2 class="text-center text-4xl font-black mb-16">Featured Projects</h2>
-            <div class="grid md:grid-cols-2 gap-10">
+        <!-- End Screen -->
+        <div id="end-screen" class="pointer-events-auto hidden flex flex-col items-center gap-6 bg-white/5 backdrop-blur-xl p-12 rounded-3xl border border-white/10 shadow-2xl">
+            <h2 id="end-title" class="text-5xl font-game italic uppercase">CRASHED</h2>
+            <div class="flex gap-12 text-center">
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest opacity-50">Distance</p>
+                    <p id="end-progress" class="text-3xl font-mono">0%</p>
+                </div>
+                <div>
+                    <p class="text-[10px] uppercase tracking-widest opacity-50">Stars</p>
+                    <p id="end-stars" class="text-3xl font-mono text-yellow-400">0</p>
+                </div>
+            </div>
+            <button id="restart-btn" class="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-colors uppercase tracking-widest">
+                Re-initialize
+            </button>
+        </div>
+    </div>
+
+    <canvas id="gameCanvas"></canvas>
+
+    <script>
+        /**
+         * AUDIO ENGINE - Improved robustness
+         */
+        class SoundEngine {
+            constructor() {
+                this.ctx = null;
+                this.master = null;
+                this.enabled = false;
+            }
+            init() {
+                if (this.ctx) return;
+                try {
+                    const AudioContext = window.AudioContext || window.webkitAudioContext;
+                    if (!AudioContext) return;
+                    this.ctx = new AudioContext();
+                    this.master = this.ctx.createGain();
+                    this.master.connect(this.ctx.destination);
+                    this.master.gain.value = 0.2;
+                    this.enabled = true;
+                    if (this.ctx.state === 'suspended') this.ctx.resume();
+                } catch (e) {
+                    console.warn("Audio Context failed to initialize:", e);
+                }
+            }
+            playTone(freq, type = 'sine', duration = 0.1, gain = 0.1) {
+                if (!this.enabled || !this.ctx) return;
+                try {
+                    const osc = this.ctx.createOscillator();
+                    const g = this.ctx.createGain();
+                    osc.type = type;
+                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                    g.gain.setValueAtTime(gain, this.ctx.currentTime);
+                    g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                    osc.connect(g);
+                    g.connect(this.master);
+                    osc.start();
+                    osc.stop(this.ctx.currentTime + duration);
+                } catch(e) {}
+            }
+            playHit() { this.playTone(150, 'square', 0.3, 0.2); }
+            playStar() { this.playTone(880, 'sine', 0.2, 0.1); }
+            playPulse() { this.playTone(60, 'triangle', 0.1, 0.3); }
+        }
+
+        const audio = new SoundEngine();
+
+        class Particle {
+            constructor(x, y, color) {
+                this.x = x; this.y = y;
+                this.color = color;
+                this.size = Math.random() * 4 + 2;
+                this.vx = (Math.random() - 0.5) * 10;
+                this.vy = (Math.random() - 0.5) * 10;
+                this.life = 1;
+            }
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life -= 0.02;
+            }
+        }
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // UI Object initialized safely
+        const ui = {
+            hud: document.getElementById('hud'),
+            start: document.getElementById('start-screen'),
+            end: document.getElementById('end-screen'),
+            endTitle: document.getElementById('end-title'),
+            endProgress: document.getElementById('end-progress'),
+            endStars: document.getElementById('end-stars'),
+            bestScore: document.getElementById('best-score'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            startBtn: document.getElementById('start-btn'),
+            restartBtn: document.getElementById('restart-btn')
+        };
+
+        const config = {
+            baseSpeed: 7,
+            verticalSpeed: 7,
+            playerSize: 14,
+            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'],
+            levelLength: 15000
+        };
+
+        let state = 'START';
+        let cameraX = 0;
+        let shake = 0;
+        let particles = [];
+        let starsCollected = 0;
+        let bestProgress = localStorage.getItem('wave_dash_best') || 0;
+
+        let player = {
+            x: 150, y: 0, 
+            isPressing: false,
+            trail: [],
+            color: '#fff'
+        };
+
+        let world = {
+            walls: [],
+            obstacles: [],
+            stars: [],
+            bgColor: config.colors[0]
+        };
+
+        function resize() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            if (state === 'START') player.y = canvas.height / 2;
+        }
+
+        function createLevel() {
+            world.walls = [];
+            world.obstacles = [];
+            world.stars = [];
+            let x = 0;
+            let currentGapY = canvas.height / 2;
+            let baseGapSize = Math.max(200, canvas.height * 0.45);
+
+            while (x < config.levelLength + canvas.width) {
+                const width = 200 + Math.random() * 300;
                 
-                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
-                    <div class="p-8">
-                        <div class="flex justify-between items-start mb-4">
-                            <span class="bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Kaggle Competition</span>
-                            <span class="text-indigo-600 font-bold">Rank 147 / 1970</span>
-                        </div>
-                        <h3 class="text-2xl font-bold mb-4">Engage2Value: Clicks to Conversions</h3>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Predicting customer purchase value from multi-session digital behavior. Handled real-world clickstream data, feature engineering, and hyperparameter tuning.</p>
-                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>#MachineLearning</span> <span>#ScikitLearn</span> <span>#EDA</span>
-                        </div>
-                        <a href="#" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Case Study <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                currentGapY += (Math.random() - 0.5) * 200;
+                currentGapY = Math.max(canvas.height * 0.25, Math.min(canvas.height * 0.75, currentGapY));
+                
+                const difficultyRatio = x / config.levelLength;
+                const currentGap = baseGapSize * (1 - difficultyRatio * 0.4);
 
-                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
-                    <div class="p-8">
-                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Full Stack</span>
-                        <h3 class="text-2xl font-bold mb-4">Influencer Platform v2</h3>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Modern web app with Decoupled Architecture. Flask REST API, VueJS, and asynchronous tasks via Redis/Celery.</p>
-                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>#Flask</span> <span>#VueJS</span> <span>#Redis</span> <span>#Celery</span>
-                        </div>
-                        <a href="https://github.com/anmol-005/IESCP_V2" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Project <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                world.walls.push({
+                    x, width,
+                    top: currentGapY - currentGap / 2,
+                    bottom: currentGapY + currentGap / 2
+                });
 
-                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
-                    <div class="p-8">
-                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Business Analytics</span>
-                        <h3 class="text-2xl font-bold mb-4">Retail Success & Inventory</h3>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Applied ABC/Pareto analysis to real business data from Saawaria Fashion to optimize stock and revenue.</p>
-                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>#BusinessIntelligence</span> <span>#Forecasting</span>
-                        </div>
-                        <a href="#" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Report <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+                if (x > 800) {
+                    if (Math.random() < 0.4) {
+                        world.obstacles.push({
+                            x: x + width / 2,
+                            y: currentGapY + (Math.random() - 0.5) * (currentGap * 0.6),
+                            r: 25 + Math.random() * 15,
+                            rot: 0
+                        });
+                    }
+                    if (Math.random() < 0.3) {
+                        world.stars.push({
+                            x: x + width / 4,
+                            y: currentGapY + (Math.random() - 0.5) * (currentGap * 0.8),
+                            collected: false
+                        });
+                    }
+                }
+                x += width;
+            }
+        }
 
-                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
-                    <div class="p-8">
-                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Web Dev</span>
-                        <h3 class="text-2xl font-bold mb-4">Influencer Engagement v1</h3>
-                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Monolithic application using Jinja2 and SQLAlchemy. The foundational version focusing on routing and ORM.</p>
-                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
-                            <span>#Jinja2</span> <span>#SQLAlchemy</span> <span>#Python</span>
-                        </div>
-                        <a href="https://github.com/anmol-005/IESPC" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Legacy <i class="fas fa-arrow-right"></i></a>
-                    </div>
-                </div>
+        function reset() {
+            cameraX = 0;
+            starsCollected = 0;
+            player.x = 150;
+            player.y = canvas.height / 2;
+            player.trail = [];
+            player.isPressing = false;
+            particles = [];
+            createLevel();
+            ui.bestScore.innerText = `${bestProgress}%`;
+        }
 
-            </div>
-        </div>
-    </section>
+        function endGame(won) {
+            if (state === 'END') return;
+            state = 'END';
+            audio.playHit();
+            shake = 20;
+            
+            for(let i=0; i<30; i++) particles.push(new Particle(player.x, player.y, '#fff'));
 
-    <footer id="contact" class="py-20 bg-slate-900 text-white text-center">
-        <div class="max-w-4xl mx-auto px-6">
-            <h2 class="text-4xl font-black mb-8">Ready to start a project?</h2>
-            <div class="flex justify-center gap-6 mb-12">
-                <a href="https://www.linkedin.com/in/anmolkansal2005" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fab fa-linkedin-in"></i></a>
-                <a href="https://github.com/anmol-005" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fab fa-github"></i></a>
-                <a href="mailto:anmolkansal1805@gmail.com" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fas fa-envelope"></i></a>
-            </div>
-            <p class="text-slate-500 font-medium">Built with <span class="text-indigo-500">Tailwind CSS</span> & Passion</p>
-        </div>
-    </footer>
+            const progress = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
+            if (progress > bestProgress) {
+                bestProgress = progress;
+                localStorage.setItem('wave_dash_best', bestProgress);
+            }
 
+            ui.hud.style.opacity = '0';
+            ui.end.classList.remove('hidden');
+            ui.endTitle.innerText = won ? "LEVEL SYNCED" : "SEQUENCE INTERRUPTED";
+            ui.endTitle.style.color = won ? "#4ade80" : "#f43f5e";
+            ui.endProgress.innerText = `${progress}%`;
+            ui.endStars.innerText = starsCollected;
+        }
+
+        function update() {
+            if (state !== 'PLAYING') return;
+
+            const speed = config.baseSpeed + (cameraX / config.levelLength) * 4;
+            cameraX += speed;
+            player.x += speed;
+
+            player.y += player.isPressing ? -config.verticalSpeed : config.verticalSpeed;
+
+            if (player.y < 0 || player.y > canvas.height) {
+                endGame(false);
+                return;
+            }
+
+            player.trail.push({ x: player.x, y: player.y });
+            if (player.trail.length > 50) player.trail.shift();
+
+            // Background & Progress logic
+            const colorProgress = (cameraX / config.levelLength) * (config.colors.length - 1);
+            const colorIdx = Math.max(0, Math.min(config.colors.length - 2, Math.floor(colorProgress)));
+            const lerp = colorProgress % 1;
+            world.bgColor = lerpColor(config.colors[colorIdx], config.colors[colorIdx+1], lerp);
+
+            const wall = world.walls.find(w => player.x >= w.x && player.x <= w.x + w.width);
+            if (wall && (player.y < wall.top || player.y > wall.bottom)) {
+                endGame(false);
+                return;
+            }
+
+            world.obstacles.forEach(o => {
+                o.rot += 0.1;
+                if (Math.hypot(player.x - o.x, player.y - o.y) < o.r + 5) endGame(false);
+            });
+
+            world.stars.forEach(s => {
+                if (!s.collected && Math.hypot(player.x - s.x, player.y - s.y) < 30) {
+                    s.collected = true;
+                    starsCollected++;
+                    audio.playStar();
+                    for(let i=0; i<8; i++) particles.push(new Particle(s.x, s.y, '#fbbf24'));
+                }
+            });
+
+            particles.forEach((p, i) => {
+                p.update();
+                if (p.life <= 0) particles.splice(i, 1);
+            });
+
+            const progress = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
+            ui.progressBar.style.width = progress + '%';
+            ui.progressText.innerText = progress + '%';
+            
+            if (progress >= 100) endGame(true);
+            if (shake > 0) shake *= 0.9;
+        }
+
+        function draw() {
+            ctx.fillStyle = '#050505';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.height);
+            grad.addColorStop(0, world.bgColor + '44');
+            grad.addColorStop(1, '#000000');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            ctx.save();
+            if (shake > 0) ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
+            ctx.translate(-cameraX, 0);
+
+            // Grid lines
+            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
+            ctx.lineWidth = 1;
+            for(let gx = Math.floor(cameraX/100)*100; gx < cameraX + canvas.width; gx+=100) {
+                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke();
+            }
+
+            // Walls
+            ctx.fillStyle = '#0a0a0a';
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.shadowBlur = 10;
+            ctx.shadowColor = world.bgColor;
+
+            world.walls.forEach(w => {
+                if (w.x + w.width < cameraX || w.x > cameraX + canvas.width) return;
+                ctx.fillRect(w.x, 0, w.width, w.top);
+                ctx.strokeRect(w.x, -5, w.width, w.top + 5);
+                ctx.fillRect(w.x, w.bottom, w.width, canvas.height - w.bottom);
+                ctx.strokeRect(w.x, w.bottom, w.width, canvas.height - w.bottom + 5);
+            });
+
+            // Stars & Obstacles
+            ctx.shadowBlur = 0;
+            world.stars.forEach(s => {
+                if (s.collected || s.x < cameraX - 50 || s.x > cameraX + canvas.width + 50) return;
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                for(let i=0; i<5; i++) ctx.lineTo(s.x + Math.cos(i*Math.PI*0.8)*12, s.y + Math.sin(i*Math.PI*0.8)*12);
+                ctx.closePath(); ctx.fill();
+            });
+
+            world.obstacles.forEach(o => {
+                if (o.x < cameraX - 50 || o.x > cameraX + canvas.width + 50) return;
+                ctx.save();
+                ctx.translate(o.x, o.y);
+                ctx.rotate(o.rot);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6));
+                ctx.closePath(); ctx.fill();
+                ctx.restore();
+            });
+
+            // Particles
+            particles.forEach(p => {
+                ctx.globalAlpha = Math.max(0, p.life);
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+            ctx.globalAlpha = 1;
+
+            // Player Trail
+            if (player.trail.length > 1) {
+                ctx.beginPath();
+                ctx.strokeStyle = '#fff';
+                ctx.lineWidth = 3;
+                ctx.moveTo(player.trail[0].x, player.trail[0].y);
+                player.trail.forEach(pt => ctx.lineTo(pt.x, pt.y));
+                ctx.stroke();
+            }
+
+            // Player
+            if (state !== 'END') {
+                ctx.save();
+                ctx.translate(player.x, player.y);
+                ctx.rotate(player.isPressing ? -Math.PI/4 : Math.PI/4);
+                ctx.fillStyle = '#fff';
+                ctx.beginPath();
+                ctx.moveTo(config.playerSize*1.5, 0);
+                ctx.lineTo(-config.playerSize, -config.playerSize);
+                ctx.lineTo(-config.playerSize, config.playerSize);
+                ctx.closePath(); ctx.fill();
+                ctx.restore();
+            }
+
+            ctx.restore();
+        }
+
+        function lerpColor(a, b, amount) {
+            const hex = (x) => x.toString(16).padStart(2, '0');
+            const r1 = parseInt(a.slice(1, 3), 16), g1 = parseInt(a.slice(3, 5), 16), b1 = parseInt(a.slice(5, 7), 16);
+            const r2 = parseInt(b.slice(1, 3), 16), g2 = parseInt(b.slice(3, 5), 16), b2 = parseInt(b.slice(5, 7), 16);
+            const r = Math.round(r1 + (r2 - r1) * amount);
+            const g = Math.round(g1 + (g2 - g1) * amount);
+            const bl = Math.round(b1 + (b2 - b1) * amount);
+            return `#${hex(r)}${hex(g)}${hex(bl)}`;
+        }
+
+        const handleInput = (val) => {
+            if (state === 'PLAYING') {
+                player.isPressing = val;
+                if (val) audio.playPulse();
+            }
+        };
+
+        // Events
+        window.addEventListener('mousedown', () => handleInput(true));
+        window.addEventListener('mouseup', () => handleInput(false));
+        window.addEventListener('touchstart', (e) => { e.preventDefault(); audio.init(); handleInput(true); }, {passive: false});
+        window.addEventListener('touchend', (e) => { e.preventDefault(); handleInput(false); }, {passive: false});
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') handleInput(true); });
+        window.addEventListener('keyup', (e) => { if (e.code === 'Space') handleInput(false); });
+
+        ui.startBtn.onclick = (e) => {
+            e.stopPropagation();
+            audio.init();
+            state = 'PLAYING';
+            reset();
+            ui.start.classList.add('hidden');
+            ui.hud.style.opacity = '1';
+        };
+
+        ui.restartBtn.onclick = (e) => {
+            e.stopPropagation();
+            state = 'PLAYING';
+            reset();
+            ui.end.classList.add('hidden');
+            ui.hud.style.opacity = '1';
+        };
+
+        function loop() {
+            update();
+            draw();
+            requestAnimationFrame(loop);
+        }
+
+        window.onload = () => {
+            resize();
+            reset();
+            loop();
+        };
+        window.addEventListener('resize', resize);
+    </script>
 </body>
 </html>
+
