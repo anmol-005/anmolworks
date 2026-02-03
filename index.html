@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wave Dash: Rhythm Edition</title>
+    <title>Wave Dash: Level Master</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         body {
@@ -11,7 +11,7 @@
             overflow: hidden;
             background-color: #050505;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            touch-action: none; /* Critical for mobile touch games */
+            touch-action: none;
             user-select: none;
             -webkit-user-select: none;
             color: white;
@@ -21,65 +21,72 @@
         canvas { display: block; width: 100%; height: 100%; }
         .font-game { font-family: 'Arial Black', Gadget, sans-serif; }
         
-        #ui-overlay {
-            position: fixed;
-            inset: 0;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            pointer-events: none;
+        .interactive { pointer-events: auto; }
+        
+        .level-card {
+            transition: all 0.2s;
+        }
+        .level-card:not(.locked):active { transform: scale(0.9); }
+        .level-card.locked { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
+
+        #countdown {
+            text-shadow: 0 0 30px rgba(255,255,255,0.5);
+            animation: bounce 1s infinite;
         }
 
-        /* Allow clicks on children */
-        .interactive {
-            pointer-events: auto;
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.2); }
         }
 
-        .scanline {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(255,255,255,0.02) 50%);
-            background-size: 100% 4px;
-            pointer-events: none;
-            z-index: 50;
+        .setting-btn.active {
+            background-color: white;
+            color: black;
+            box-shadow: 0 0 15px rgba(255,255,255,0.5);
         }
     </style>
 </head>
 <body class="bg-black">
 
-    <div class="scanline"></div>
-
-    <div id="ui-overlay">
-        <!-- Top HUD -->
-        <div id="hud" class="absolute top-12 left-0 w-full px-8 flex justify-between items-start opacity-0 transition-opacity duration-500">
+    <!-- UI Layer -->
+    <div id="ui-layer" class="fixed inset-0 z-50 pointer-events-none flex flex-col items-center justify-center">
+        
+        <!-- HUD -->
+        <div id="hud" class="absolute top-8 left-0 w-full px-6 flex justify-between items-start opacity-0 transition-opacity">
             <div class="flex flex-col">
-                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Progress</span>
-                <div class="w-32 md:w-48 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
+                <span id="level-indicator" class="text-xs font-bold tracking-widest uppercase opacity-70">Level 1</span>
+                <div class="w-32 h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
                     <div id="progress-bar" class="h-full bg-white w-0 shadow-[0_0_10px_#fff]"></div>
                 </div>
                 <span id="progress-text" class="text-[10px] mt-1 font-mono">0%</span>
             </div>
             <div class="text-right">
-                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Best Attempt</span>
+                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Best</span>
                 <div id="best-score" class="text-lg font-game italic">0%</div>
             </div>
         </div>
 
-        <!-- Start Screen -->
-        <div id="start-screen" class="interactive flex flex-col items-center gap-8 px-6 text-center">
-            <div>
-                <h1 class="text-6xl md:text-8xl font-game italic tracking-tighter leading-none drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">WAVE DASH</h1>
-                <p class="text-xs tracking-[0.3em] uppercase opacity-50 mt-4">Rhythm Edition</p>
+        <!-- Start/Menu Screen -->
+        <div id="menu-screen" class="interactive flex flex-col items-center gap-6 text-center max-w-lg w-full px-4">
+            <h1 class="text-6xl md:text-8xl font-game italic tracking-tighter leading-none">WAVE DASH</h1>
+            
+            <!-- Speed Settings -->
+            <div class="flex gap-2 p-1 bg-white/5 rounded-full border border-white/10 mt-4">
+                <button data-speed="slow" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all">Slow</button>
+                <button data-speed="med" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all active">Medium</button>
+                <button data-speed="fast" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all">Fast</button>
+            </div>
+
+            <div class="grid grid-cols-5 gap-3 mt-6 w-full max-h-[40vh] overflow-y-auto p-4 bg-white/5 rounded-2xl border border-white/10">
+                <!-- Levels populated by JS -->
             </div>
             
-            <button id="start-btn" class="group relative px-10 py-5 bg-white text-black font-black text-xl rounded-full transition-all active:scale-90">
-                <span class="relative z-10">START SEQUENCE</span>
-                <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-20 group-hover:opacity-40"></div>
-            </button>
-            
-            <p class="text-[10px] opacity-40 uppercase tracking-[0.2em]">Hold screen to fly up</p>
+            <p class="text-[10px] opacity-40 uppercase tracking-[0.2em] mt-2">Select a level to start sequence</p>
+        </div>
+
+        <!-- Countdown -->
+        <div id="countdown-layer" class="hidden">
+            <h1 id="countdown-text" class="text-9xl font-game italic">3</h1>
         </div>
 
         <!-- End Screen -->
@@ -87,39 +94,34 @@
             <h2 id="end-title" class="text-4xl font-game italic uppercase">CRASHED</h2>
             <div class="flex gap-8 text-center">
                 <div>
-                    <p class="text-[10px] uppercase tracking-widest opacity-50">Distance</p>
-                    <p id="end-progress" class="text-2xl font-mono">0%</p>
+                    <p class="text-[10px] uppercase tracking-widest opacity-50">Level Progress</p>
+                    <p id="end-progress" class="text-3xl font-mono">0%</p>
                 </div>
                 <div>
                     <p class="text-[10px] uppercase tracking-widest opacity-50">Stars</p>
-                    <p id="end-stars" class="text-2xl font-mono text-yellow-400">0</p>
+                    <p id="end-stars" class="text-3xl font-mono text-yellow-400">0</p>
                 </div>
             </div>
-            <button id="restart-btn" class="w-full py-4 bg-white text-black font-bold text-lg rounded-xl active:scale-95 transition-transform uppercase tracking-widest">
-                Re-initialize
-            </button>
+            <div class="flex gap-4 w-full">
+                <button id="menu-btn" class="flex-1 py-4 bg-white/10 text-white font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Menu</button>
+                <button id="retry-btn" class="flex-[2] py-4 bg-white text-black font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Retry Level</button>
+            </div>
         </div>
     </div>
 
     <canvas id="gameCanvas"></canvas>
 
     <script>
-        /**
-         * AUDIO ENGINE
-         */
+        /** AUDIO ENGINE **/
         class SoundEngine {
-            constructor() {
-                this.ctx = null;
-                this.enabled = false;
-            }
+            constructor() { this.ctx = null; this.enabled = false; }
             init() {
                 if (this.ctx) return;
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
                     this.ctx = new AudioContext();
                     this.enabled = true;
-                    if (this.ctx.state === 'suspended') this.ctx.resume();
-                } catch (e) { console.error("Audio init failed", e); }
+                } catch (e) {}
             }
             playTone(freq, type = 'sine', duration = 0.1, gain = 0.1) {
                 if (!this.enabled || !this.ctx) return;
@@ -129,92 +131,155 @@
                 osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
                 g.gain.setValueAtTime(gain, this.ctx.currentTime);
                 g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-                osc.connect(g);
-                g.connect(this.ctx.destination);
-                osc.start();
-                osc.stop(this.ctx.currentTime + duration);
+                osc.connect(g); g.connect(this.ctx.destination);
+                osc.start(); osc.stop(this.ctx.currentTime + duration);
             }
-            playHit() { this.playTone(100, 'square', 0.4, 0.15); }
-            playStar() { this.playTone(900, 'sine', 0.2, 0.1); }
-            playPulse() { this.playTone(80, 'triangle', 0.1, 0.2); }
+            playHit() { this.playTone(100, 'square', 0.4, 0.1); }
+            playStar() { this.playTone(900, 'sine', 0.2, 0.05); }
+            playPulse() { this.playTone(80, 'triangle', 0.1, 0.1); }
+            playTick() { this.playTone(440, 'sine', 0.05, 0.05); }
         }
 
         const audio = new SoundEngine();
 
-        // Game Variables
+        // Game State
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
         const ui = {
             hud: document.getElementById('hud'),
-            start: document.getElementById('start-screen'),
+            menu: document.getElementById('menu-screen'),
             end: document.getElementById('end-screen'),
+            countdownLayer: document.getElementById('countdown-layer'),
+            countdownText: document.getElementById('countdown-text'),
+            levelGrid: document.querySelector('.grid'),
+            speedBtns: document.querySelectorAll('.setting-btn'),
+            levelIndicator: document.getElementById('level-indicator'),
+            progressBar: document.getElementById('progress-bar'),
+            progressText: document.getElementById('progress-text'),
+            bestScore: document.getElementById('best-score'),
             endTitle: document.getElementById('end-title'),
             endProgress: document.getElementById('end-progress'),
             endStars: document.getElementById('end-stars'),
-            bestScore: document.getElementById('best-score'),
-            progressBar: document.getElementById('progress-bar'),
-            progressText: document.getElementById('progress-text'),
-            startBtn: document.getElementById('start-btn'),
-            restartBtn: document.getElementById('restart-btn')
+            retryBtn: document.getElementById('retry-btn'),
+            menuBtn: document.getElementById('menu-btn')
         };
 
         const config = {
-            baseSpeed: 6,
-            verticalSpeed: 6,
+            speeds: { slow: 4.5, med: 6.5, fast: 9 },
             playerSize: 12,
-            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'],
-            levelLength: 12000
+            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981']
         };
 
-        let state = 'START';
-        let cameraX = 0;
-        let particles = [];
-        let starsCollected = 0;
-        let bestProgress = localStorage.getItem('wave_dash_best') || 0;
+        let state = 'MENU';
+        let currentLevel = 1;
+        let selectedSpeed = 'med';
+        let maxLevelReached = parseInt(localStorage.getItem('wave_dash_max_level')) || 1;
+        let bestScores = JSON.parse(localStorage.getItem('wave_dash_bests')) || {};
 
+        let cameraX = 0;
+        let starsCollected = 0;
         let player = { x: 150, y: 0, isPressing: false, trail: [] };
         let world = { walls: [], obstacles: [], stars: [], bgColor: config.colors[0] };
+
+        // Initialize Level Grid
+        function initLevelGrid() {
+            ui.levelGrid.innerHTML = '';
+            for (let i = 1; i <= 25; i++) {
+                const isLocked = i > maxLevelReached;
+                const best = bestScores[i] || 0;
+                const card = document.createElement('div');
+                card.className = `level-card flex flex-col items-center justify-center p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer ${isLocked ? 'locked' : ''}`;
+                card.innerHTML = `
+                    <span class="text-xs font-game italic opacity-50">${i}</span>
+                    <span class="text-[10px] font-mono mt-1">${best}%</span>
+                `;
+                card.onclick = () => { if (!isLocked) startCountdown(i); };
+                ui.levelGrid.appendChild(card);
+            }
+        }
 
         function resize() {
             canvas.width = window.innerWidth;
             canvas.height = window.innerHeight;
-            if (state === 'START') player.y = canvas.height / 2;
+            if (state === 'MENU') player.y = canvas.height / 2;
         }
 
-        function createLevel() {
+        // Seeded Level Generation
+        function generateLevel(lvl) {
             world.walls = []; world.obstacles = []; world.stars = [];
+            // Simple deterministic RNG
+            let seed = lvl * 1337;
+            const rand = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
+
             let x = 0;
             let currentGapY = canvas.height / 2;
-            let baseGapSize = Math.max(180, canvas.height * 0.4);
+            const length = 5000 + lvl * 1000;
+            const baseGapSize = Math.max(150, canvas.height * 0.5 - (lvl * 5));
 
-            while (x < config.levelLength + canvas.width) {
-                const width = 200 + Math.random() * 200;
-                currentGapY += (Math.random() - 0.5) * 180;
+            while (x < length + canvas.width) {
+                const width = 150 + rand() * 200;
+                currentGapY += (rand() - 0.5) * 200;
                 currentGapY = Math.max(canvas.height * 0.25, Math.min(canvas.height * 0.75, currentGapY));
                 
-                const difficultyRatio = x / config.levelLength;
-                const currentGap = baseGapSize * (1 - difficultyRatio * 0.35);
-
-                world.walls.push({ x, width, top: currentGapY - currentGap / 2, bottom: currentGapY + currentGap / 2 });
+                const gapSize = baseGapSize * (1 - (x / length) * 0.3);
+                world.walls.push({ x, width, top: currentGapY - gapSize/2, bottom: currentGapY + gapSize/2 });
 
                 if (x > 800) {
-                    if (Math.random() < 0.4) world.obstacles.push({ x: x + width/2, y: currentGapY + (Math.random()-0.5)*(currentGap*0.6), r: 20+Math.random()*15, rot: 0 });
-                    if (Math.random() < 0.25) world.stars.push({ x: x + width/4, y: currentGapY + (Math.random()-0.5)*(currentGap*0.7), collected: false });
+                    if (rand() < 0.2 + (lvl * 0.02)) {
+                        world.obstacles.push({ x: x + width/2, y: currentGapY + (rand()-0.5)*(gapSize*0.6), r: 20 + rand()*10, rot: 0 });
+                    }
+                    if (rand() < 0.15) {
+                        world.stars.push({ x: x + width/4, y: currentGapY + (rand()-0.5)*(gapSize*0.75), collected: false });
+                    }
                 }
                 x += width;
             }
+            return length;
         }
 
-        function reset() {
+        let levelLengthTotal = 0;
+
+        function startCountdown(lvl) {
+            audio.init();
+            currentLevel = lvl;
+            state = 'COUNTDOWN';
+            ui.menu.classList.add('hidden');
+            ui.end.classList.add('hidden');
+            ui.countdownLayer.classList.remove('hidden');
+            
+            let count = 3;
+            ui.countdownText.innerText = count;
+            audio.playTick();
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    ui.countdownText.innerText = count;
+                    audio.playTick();
+                } else if (count === 0) {
+                    ui.countdownText.innerText = "GO!";
+                    audio.playTick();
+                } else {
+                    clearInterval(timer);
+                    beginGame();
+                }
+            }, 800);
+        }
+
+        function beginGame() {
+            ui.countdownLayer.classList.add('hidden');
+            ui.hud.style.opacity = '1';
+            ui.levelIndicator.innerText = `Level ${currentLevel}`;
+            ui.bestScore.innerText = `${bestScores[currentLevel] || 0}%`;
+            
+            levelLengthTotal = generateLevel(currentLevel);
             cameraX = 0;
             starsCollected = 0;
             player.x = 150;
             player.y = canvas.height / 2;
             player.trail = [];
             player.isPressing = false;
-            particles = [];
-            createLevel();
-            ui.bestScore.innerText = `${bestProgress}%`;
+            state = 'PLAYING';
         }
 
         function endGame(won) {
@@ -222,35 +287,42 @@
             state = 'END';
             audio.playHit();
             
-            const progress = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
-            if (progress > bestProgress) {
-                bestProgress = progress;
-                localStorage.setItem('wave_dash_best', bestProgress);
+            const progress = Math.min(100, Math.floor((cameraX / levelLengthTotal) * 100));
+            if (progress > (bestScores[currentLevel] || 0)) {
+                bestScores[currentLevel] = progress;
+                localStorage.setItem('wave_dash_bests', JSON.stringify(bestScores));
+            }
+
+            if (won && currentLevel === maxLevelReached && maxLevelReached < 25) {
+                maxLevelReached++;
+                localStorage.setItem('wave_dash_max_level', maxLevelReached);
             }
 
             ui.hud.style.opacity = '0';
             ui.end.classList.remove('hidden');
-            ui.endTitle.innerText = won ? "LEVEL SYNCED" : "SEQUENCE LOST";
+            ui.endTitle.innerText = won ? "SYNC COMPLETE" : "CRASHED";
             ui.endTitle.style.color = won ? "#4ade80" : "#f43f5e";
             ui.endProgress.innerText = `${progress}%`;
             ui.endStars.innerText = starsCollected;
+            
+            initLevelGrid(); // Refresh grid state
         }
 
         function update() {
             if (state !== 'PLAYING') return;
 
-            const speed = config.baseSpeed + (cameraX / config.levelLength) * 4;
-            cameraX += speed;
-            player.x += speed;
+            const currentSpeed = config.speeds[selectedSpeed];
+            cameraX += currentSpeed;
+            player.x += currentSpeed;
 
-            player.y += player.isPressing ? -config.verticalSpeed : config.verticalSpeed;
+            player.y += player.isPressing ? -currentSpeed : currentSpeed;
 
             if (player.y < 0 || player.y > canvas.height) { endGame(false); return; }
 
             player.trail.push({ x: player.x, y: player.y });
-            if (player.trail.length > 40) player.trail.shift();
+            if (player.trail.length > 30) player.trail.shift();
 
-            const cp = (cameraX / config.levelLength) * (config.colors.length - 1);
+            const cp = (cameraX / levelLengthTotal) * (config.colors.length - 1);
             const cIdx = Math.max(0, Math.min(config.colors.length-2, Math.floor(cp)));
             world.bgColor = lerpColor(config.colors[cIdx], config.colors[cIdx+1], cp % 1);
 
@@ -268,7 +340,7 @@
                 }
             });
 
-            const prog = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
+            const prog = Math.min(100, Math.floor((cameraX / levelLengthTotal) * 100));
             ui.progressBar.style.width = prog + '%';
             ui.progressText.innerText = prog + '%';
             if (prog >= 100) endGame(true);
@@ -278,20 +350,16 @@
             ctx.fillStyle = '#050505';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Glow
             const g = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.height);
             g.addColorStop(0, world.bgColor + '33');
             g.addColorStop(1, '#000000');
-            ctx.fillStyle = g;
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.save();
             ctx.translate(-cameraX, 0);
 
             // Walls
-            ctx.fillStyle = '#0a0a0a';
-            ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 1.5;
+            ctx.fillStyle = '#0a0a0a'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
             world.walls.forEach(w => {
                 if (w.x + w.width < cameraX || w.x > cameraX + canvas.width) return;
                 ctx.fillRect(w.x, 0, w.width, w.top);
@@ -303,8 +371,7 @@
             // Stars
             world.stars.forEach(s => {
                 if (s.collected || s.x < cameraX - 50) return;
-                ctx.fillStyle = '#fbbf24';
-                ctx.beginPath();
+                ctx.fillStyle = '#fbbf24'; ctx.beginPath();
                 for(let i=0; i<5; i++) ctx.lineTo(s.x + Math.cos(i*Math.PI*0.8)*12, s.y + Math.sin(i*Math.PI*0.8)*12);
                 ctx.closePath(); ctx.fill();
             });
@@ -312,29 +379,25 @@
             // Saws
             world.obstacles.forEach(o => {
                 if (o.x < cameraX - 50) return;
-                ctx.save();
-                ctx.translate(o.x, o.y); ctx.rotate(o.rot);
-                ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.65), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.65));
-                ctx.closePath(); ctx.fill();
-                ctx.restore();
+                ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot);
+                ctx.fillStyle = '#fff'; ctx.beginPath();
+                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6));
+                ctx.closePath(); ctx.fill(); ctx.restore();
             });
 
             // Trail
             if (player.trail.length > 1) {
-                ctx.beginPath(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
                 ctx.moveTo(player.trail[0].x, player.trail[0].y);
                 player.trail.forEach(pt => ctx.lineTo(pt.x, pt.y));
                 ctx.stroke();
             }
 
             // Player
-            if (state !== 'END') {
+            if (state === 'PLAYING') {
                 ctx.save(); ctx.translate(player.x, player.y);
-                ctx.rotate(player.isPressing ? -0.5 : 0.5);
-                ctx.fillStyle = '#fff';
-                ctx.beginPath(); ctx.moveTo(config.playerSize*1.5, 0); ctx.lineTo(-config.playerSize, -config.playerSize); ctx.lineTo(-config.playerSize, config.playerSize); ctx.closePath(); ctx.fill();
+                ctx.rotate(player.isPressing ? -0.4 : 0.4);
+                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(config.playerSize*1.5, 0); ctx.lineTo(-config.playerSize, -config.playerSize); ctx.lineTo(-config.playerSize, config.playerSize); ctx.closePath(); ctx.fill();
                 ctx.restore();
             }
             ctx.restore();
@@ -347,41 +410,31 @@
             return `#${h(Math.round(r1 + (r2 - r1) * amount))}${h(Math.round(g1 + (g2 - g1) * amount))}${h(Math.round(b1 + (b2 - b1) * amount))}`;
         }
 
-        // --- Interaction Setup ---
-        const startSequence = () => {
-            if (state !== 'START' && state !== 'END') return;
-            audio.init();
-            reset();
-            state = 'PLAYING';
-            ui.start.classList.add('hidden');
+        // Inputs
+        ui.speedBtns.forEach(btn => {
+            btn.onclick = () => {
+                ui.speedBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                selectedSpeed = btn.dataset.speed;
+            };
+        });
+
+        ui.retryBtn.onclick = () => startCountdown(currentLevel);
+        ui.menuBtn.onclick = () => {
+            state = 'MENU';
             ui.end.classList.add('hidden');
-            ui.hud.style.opacity = '1';
+            ui.menu.classList.remove('hidden');
         };
 
-        // UI Buttons
-        ui.startBtn.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            startSequence();
-        });
-        ui.restartBtn.addEventListener('pointerdown', (e) => {
-            e.stopPropagation();
-            startSequence();
-        });
-
-        // Global Input
-        window.addEventListener('pointerdown', (e) => {
-            if (state === 'PLAYING') {
-                player.isPressing = true;
-                audio.playPulse();
-            }
+        window.addEventListener('pointerdown', () => {
+            if (state === 'PLAYING') { player.isPressing = true; audio.playPulse(); }
         });
         window.addEventListener('pointerup', () => player.isPressing = false);
         window.addEventListener('keydown', (e) => { if (e.code === 'Space') { player.isPressing = true; audio.playPulse(); } });
         window.addEventListener('keyup', (e) => { if (e.code === 'Space') player.isPressing = false; });
 
         function loop() { update(); draw(); requestAnimationFrame(loop); }
-
-        window.onload = () => { resize(); reset(); loop(); };
+        window.onload = () => { resize(); initLevelGrid(); loop(); };
         window.addEventListener('resize', resize);
     </script>
 </body>
