@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Wave Dash: Rhythm Edition</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -11,87 +11,91 @@
             overflow: hidden;
             background-color: #050505;
             font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            touch-action: none;
+            touch-action: none; /* Critical for mobile touch games */
             user-select: none;
+            -webkit-user-select: none;
             color: white;
+            width: 100vw;
+            height: 100vh;
         }
-        canvas { display: block; }
+        canvas { display: block; width: 100%; height: 100%; }
         .font-game { font-family: 'Arial Black', Gadget, sans-serif; }
         
-        @keyframes scanline {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-        .scanline {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 10px;
-            background: rgba(255, 255, 255, 0.03);
-            pointer-events: none;
-            z-index: 50;
-            animation: scanline 8s linear infinite;
-        }
-        .vignette {
+        #ui-overlay {
             position: fixed;
             inset: 0;
-            background: radial-gradient(circle, transparent 40%, rgba(0,0,0,0.5) 100%);
-            pointer-events: none;
-            z-index: 40;
-        }
-        #ui-overlay {
             z-index: 100;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+        }
+
+        /* Allow clicks on children */
+        .interactive {
+            pointer-events: auto;
+        }
+
+        .scanline {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: linear-gradient(to bottom, rgba(255,255,255,0) 50%, rgba(255,255,255,0.02) 50%);
+            background-size: 100% 4px;
+            pointer-events: none;
+            z-index: 50;
         }
     </style>
 </head>
-<body>
+<body class="bg-black">
 
     <div class="scanline"></div>
-    <div class="vignette"></div>
 
-    <div id="ui-overlay" class="fixed inset-0 flex flex-col items-center justify-between py-12 pointer-events-none">
+    <div id="ui-overlay">
         <!-- Top HUD -->
-        <div id="hud" class="w-full px-8 flex justify-between items-start opacity-0 transition-opacity duration-500">
+        <div id="hud" class="absolute top-12 left-0 w-full px-8 flex justify-between items-start opacity-0 transition-opacity duration-500">
             <div class="flex flex-col">
-                <span class="text-xs uppercase tracking-widest opacity-50 font-bold">Progress</span>
-                <div class="w-48 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
+                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Progress</span>
+                <div class="w-32 md:w-48 h-1.5 bg-white/10 rounded-full mt-1 overflow-hidden">
                     <div id="progress-bar" class="h-full bg-white w-0 shadow-[0_0_10px_#fff]"></div>
                 </div>
-                <span id="progress-text" class="text-xs mt-1 font-mono">0%</span>
+                <span id="progress-text" class="text-[10px] mt-1 font-mono">0%</span>
             </div>
             <div class="text-right">
-                <span class="text-xs uppercase tracking-widest opacity-50 font-bold">Best Attempt</span>
-                <div id="best-score" class="text-xl font-game italic">0%</div>
+                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Best Attempt</span>
+                <div id="best-score" class="text-lg font-game italic">0%</div>
             </div>
         </div>
 
         <!-- Start Screen -->
-        <div id="start-screen" class="pointer-events-auto flex flex-col items-center gap-8">
-            <div class="text-center">
-                <h1 class="text-7xl md:text-8xl font-game italic tracking-tighter drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">WAVE<br>DASH</h1>
-                <p class="text-sm tracking-[0.3em] uppercase opacity-50 mt-2">Rhythm Edition</p>
+        <div id="start-screen" class="interactive flex flex-col items-center gap-8 px-6 text-center">
+            <div>
+                <h1 class="text-6xl md:text-8xl font-game italic tracking-tighter leading-none drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">WAVE DASH</h1>
+                <p class="text-xs tracking-[0.3em] uppercase opacity-50 mt-4">Rhythm Edition</p>
             </div>
             
-            <button id="start-btn" class="group relative px-12 py-5 bg-white text-black font-black text-xl rounded-full transition-all hover:scale-105 active:scale-95">
+            <button id="start-btn" class="group relative px-10 py-5 bg-white text-black font-black text-xl rounded-full transition-all active:scale-90">
                 <span class="relative z-10">START SEQUENCE</span>
-                <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-0 group-hover:opacity-40 transition-opacity"></div>
+                <div class="absolute inset-0 bg-white rounded-full blur-xl opacity-20 group-hover:opacity-40"></div>
             </button>
             
-            <p class="text-xs opacity-40 uppercase tracking-widest">Hold to ascend / Release to descend</p>
+            <p class="text-[10px] opacity-40 uppercase tracking-[0.2em]">Hold screen to fly up</p>
         </div>
 
         <!-- End Screen -->
-        <div id="end-screen" class="pointer-events-auto hidden flex flex-col items-center gap-6 bg-white/5 backdrop-blur-xl p-12 rounded-3xl border border-white/10 shadow-2xl">
-            <h2 id="end-title" class="text-5xl font-game italic uppercase">CRASHED</h2>
-            <div class="flex gap-12 text-center">
+        <div id="end-screen" class="interactive hidden flex flex-col items-center gap-6 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 shadow-2xl">
+            <h2 id="end-title" class="text-4xl font-game italic uppercase">CRASHED</h2>
+            <div class="flex gap-8 text-center">
                 <div>
                     <p class="text-[10px] uppercase tracking-widest opacity-50">Distance</p>
-                    <p id="end-progress" class="text-3xl font-mono">0%</p>
+                    <p id="end-progress" class="text-2xl font-mono">0%</p>
                 </div>
                 <div>
                     <p class="text-[10px] uppercase tracking-widest opacity-50">Stars</p>
-                    <p id="end-stars" class="text-3xl font-mono text-yellow-400">0</p>
+                    <p id="end-stars" class="text-2xl font-mono text-yellow-400">0</p>
                 </div>
             </div>
-            <button id="restart-btn" class="w-full py-4 bg-white text-black font-bold text-lg rounded-xl hover:bg-gray-200 transition-colors uppercase tracking-widest">
+            <button id="restart-btn" class="w-full py-4 bg-white text-black font-bold text-lg rounded-xl active:scale-95 transition-transform uppercase tracking-widest">
                 Re-initialize
             </button>
         </div>
@@ -101,71 +105,45 @@
 
     <script>
         /**
-         * AUDIO ENGINE - Improved robustness
+         * AUDIO ENGINE
          */
         class SoundEngine {
             constructor() {
                 this.ctx = null;
-                this.master = null;
                 this.enabled = false;
             }
             init() {
                 if (this.ctx) return;
                 try {
                     const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    if (!AudioContext) return;
                     this.ctx = new AudioContext();
-                    this.master = this.ctx.createGain();
-                    this.master.connect(this.ctx.destination);
-                    this.master.gain.value = 0.2;
                     this.enabled = true;
                     if (this.ctx.state === 'suspended') this.ctx.resume();
-                } catch (e) {
-                    console.warn("Audio Context failed to initialize:", e);
-                }
+                } catch (e) { console.error("Audio init failed", e); }
             }
             playTone(freq, type = 'sine', duration = 0.1, gain = 0.1) {
                 if (!this.enabled || !this.ctx) return;
-                try {
-                    const osc = this.ctx.createOscillator();
-                    const g = this.ctx.createGain();
-                    osc.type = type;
-                    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                    g.gain.setValueAtTime(gain, this.ctx.currentTime);
-                    g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-                    osc.connect(g);
-                    g.connect(this.master);
-                    osc.start();
-                    osc.stop(this.ctx.currentTime + duration);
-                } catch(e) {}
+                const osc = this.ctx.createOscillator();
+                const g = this.ctx.createGain();
+                osc.type = type;
+                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+                g.gain.setValueAtTime(gain, this.ctx.currentTime);
+                g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
+                osc.connect(g);
+                g.connect(this.ctx.destination);
+                osc.start();
+                osc.stop(this.ctx.currentTime + duration);
             }
-            playHit() { this.playTone(150, 'square', 0.3, 0.2); }
-            playStar() { this.playTone(880, 'sine', 0.2, 0.1); }
-            playPulse() { this.playTone(60, 'triangle', 0.1, 0.3); }
+            playHit() { this.playTone(100, 'square', 0.4, 0.15); }
+            playStar() { this.playTone(900, 'sine', 0.2, 0.1); }
+            playPulse() { this.playTone(80, 'triangle', 0.1, 0.2); }
         }
 
         const audio = new SoundEngine();
 
-        class Particle {
-            constructor(x, y, color) {
-                this.x = x; this.y = y;
-                this.color = color;
-                this.size = Math.random() * 4 + 2;
-                this.vx = (Math.random() - 0.5) * 10;
-                this.vy = (Math.random() - 0.5) * 10;
-                this.life = 1;
-            }
-            update() {
-                this.x += this.vx;
-                this.y += this.vy;
-                this.life -= 0.02;
-            }
-        }
-
+        // Game Variables
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-        
-        // UI Object initialized safely
         const ui = {
             hud: document.getElementById('hud'),
             start: document.getElementById('start-screen'),
@@ -181,33 +159,21 @@
         };
 
         const config = {
-            baseSpeed: 7,
-            verticalSpeed: 7,
-            playerSize: 14,
+            baseSpeed: 6,
+            verticalSpeed: 6,
+            playerSize: 12,
             colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981'],
-            levelLength: 15000
+            levelLength: 12000
         };
 
         let state = 'START';
         let cameraX = 0;
-        let shake = 0;
         let particles = [];
         let starsCollected = 0;
         let bestProgress = localStorage.getItem('wave_dash_best') || 0;
 
-        let player = {
-            x: 150, y: 0, 
-            isPressing: false,
-            trail: [],
-            color: '#fff'
-        };
-
-        let world = {
-            walls: [],
-            obstacles: [],
-            stars: [],
-            bgColor: config.colors[0]
-        };
+        let player = { x: 150, y: 0, isPressing: false, trail: [] };
+        let world = { walls: [], obstacles: [], stars: [], bgColor: config.colors[0] };
 
         function resize() {
             canvas.width = window.innerWidth;
@@ -216,44 +182,24 @@
         }
 
         function createLevel() {
-            world.walls = [];
-            world.obstacles = [];
-            world.stars = [];
+            world.walls = []; world.obstacles = []; world.stars = [];
             let x = 0;
             let currentGapY = canvas.height / 2;
-            let baseGapSize = Math.max(200, canvas.height * 0.45);
+            let baseGapSize = Math.max(180, canvas.height * 0.4);
 
             while (x < config.levelLength + canvas.width) {
-                const width = 200 + Math.random() * 300;
-                
-                currentGapY += (Math.random() - 0.5) * 200;
+                const width = 200 + Math.random() * 200;
+                currentGapY += (Math.random() - 0.5) * 180;
                 currentGapY = Math.max(canvas.height * 0.25, Math.min(canvas.height * 0.75, currentGapY));
                 
                 const difficultyRatio = x / config.levelLength;
-                const currentGap = baseGapSize * (1 - difficultyRatio * 0.4);
+                const currentGap = baseGapSize * (1 - difficultyRatio * 0.35);
 
-                world.walls.push({
-                    x, width,
-                    top: currentGapY - currentGap / 2,
-                    bottom: currentGapY + currentGap / 2
-                });
+                world.walls.push({ x, width, top: currentGapY - currentGap / 2, bottom: currentGapY + currentGap / 2 });
 
                 if (x > 800) {
-                    if (Math.random() < 0.4) {
-                        world.obstacles.push({
-                            x: x + width / 2,
-                            y: currentGapY + (Math.random() - 0.5) * (currentGap * 0.6),
-                            r: 25 + Math.random() * 15,
-                            rot: 0
-                        });
-                    }
-                    if (Math.random() < 0.3) {
-                        world.stars.push({
-                            x: x + width / 4,
-                            y: currentGapY + (Math.random() - 0.5) * (currentGap * 0.8),
-                            collected: false
-                        });
-                    }
+                    if (Math.random() < 0.4) world.obstacles.push({ x: x + width/2, y: currentGapY + (Math.random()-0.5)*(currentGap*0.6), r: 20+Math.random()*15, rot: 0 });
+                    if (Math.random() < 0.25) world.stars.push({ x: x + width/4, y: currentGapY + (Math.random()-0.5)*(currentGap*0.7), collected: false });
                 }
                 x += width;
             }
@@ -275,10 +221,7 @@
             if (state === 'END') return;
             state = 'END';
             audio.playHit();
-            shake = 20;
             
-            for(let i=0; i<30; i++) particles.push(new Particle(player.x, player.y, '#fff'));
-
             const progress = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
             if (progress > bestProgress) {
                 bestProgress = progress;
@@ -287,7 +230,7 @@
 
             ui.hud.style.opacity = '0';
             ui.end.classList.remove('hidden');
-            ui.endTitle.innerText = won ? "LEVEL SYNCED" : "SEQUENCE INTERRUPTED";
+            ui.endTitle.innerText = won ? "LEVEL SYNCED" : "SEQUENCE LOST";
             ui.endTitle.style.color = won ? "#4ade80" : "#f43f5e";
             ui.endProgress.innerText = `${progress}%`;
             ui.endStars.innerText = starsCollected;
@@ -302,25 +245,17 @@
 
             player.y += player.isPressing ? -config.verticalSpeed : config.verticalSpeed;
 
-            if (player.y < 0 || player.y > canvas.height) {
-                endGame(false);
-                return;
-            }
+            if (player.y < 0 || player.y > canvas.height) { endGame(false); return; }
 
             player.trail.push({ x: player.x, y: player.y });
-            if (player.trail.length > 50) player.trail.shift();
+            if (player.trail.length > 40) player.trail.shift();
 
-            // Background & Progress logic
-            const colorProgress = (cameraX / config.levelLength) * (config.colors.length - 1);
-            const colorIdx = Math.max(0, Math.min(config.colors.length - 2, Math.floor(colorProgress)));
-            const lerp = colorProgress % 1;
-            world.bgColor = lerpColor(config.colors[colorIdx], config.colors[colorIdx+1], lerp);
+            const cp = (cameraX / config.levelLength) * (config.colors.length - 1);
+            const cIdx = Math.max(0, Math.min(config.colors.length-2, Math.floor(cp)));
+            world.bgColor = lerpColor(config.colors[cIdx], config.colors[cIdx+1], cp % 1);
 
             const wall = world.walls.find(w => player.x >= w.x && player.x <= w.x + w.width);
-            if (wall && (player.y < wall.top || player.y > wall.bottom)) {
-                endGame(false);
-                return;
-            }
+            if (wall && (player.y < wall.top || player.y > wall.bottom)) { endGame(false); return; }
 
             world.obstacles.forEach(o => {
                 o.rot += 0.1;
@@ -329,54 +264,34 @@
 
             world.stars.forEach(s => {
                 if (!s.collected && Math.hypot(player.x - s.x, player.y - s.y) < 30) {
-                    s.collected = true;
-                    starsCollected++;
-                    audio.playStar();
-                    for(let i=0; i<8; i++) particles.push(new Particle(s.x, s.y, '#fbbf24'));
+                    s.collected = true; starsCollected++; audio.playStar();
                 }
             });
 
-            particles.forEach((p, i) => {
-                p.update();
-                if (p.life <= 0) particles.splice(i, 1);
-            });
-
-            const progress = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
-            ui.progressBar.style.width = progress + '%';
-            ui.progressText.innerText = progress + '%';
-            
-            if (progress >= 100) endGame(true);
-            if (shake > 0) shake *= 0.9;
+            const prog = Math.min(100, Math.floor((cameraX / config.levelLength) * 100));
+            ui.progressBar.style.width = prog + '%';
+            ui.progressText.innerText = prog + '%';
+            if (prog >= 100) endGame(true);
         }
 
         function draw() {
             ctx.fillStyle = '#050505';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            const grad = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.height);
-            grad.addColorStop(0, world.bgColor + '44');
-            grad.addColorStop(1, '#000000');
-            ctx.fillStyle = grad;
+            // Glow
+            const g = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.height);
+            g.addColorStop(0, world.bgColor + '33');
+            g.addColorStop(1, '#000000');
+            ctx.fillStyle = g;
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             ctx.save();
-            if (shake > 0) ctx.translate((Math.random()-0.5)*shake, (Math.random()-0.5)*shake);
             ctx.translate(-cameraX, 0);
-
-            // Grid lines
-            ctx.strokeStyle = 'rgba(255,255,255,0.03)';
-            ctx.lineWidth = 1;
-            for(let gx = Math.floor(cameraX/100)*100; gx < cameraX + canvas.width; gx+=100) {
-                ctx.beginPath(); ctx.moveTo(gx, 0); ctx.lineTo(gx, canvas.height); ctx.stroke();
-            }
 
             // Walls
             ctx.fillStyle = '#0a0a0a';
             ctx.strokeStyle = '#fff';
-            ctx.lineWidth = 2;
-            ctx.shadowBlur = 10;
-            ctx.shadowColor = world.bgColor;
-
+            ctx.lineWidth = 1.5;
             world.walls.forEach(w => {
                 if (w.x + w.width < cameraX || w.x > cameraX + canvas.width) return;
                 ctx.fillRect(w.x, 0, w.width, w.top);
@@ -385,41 +300,30 @@
                 ctx.strokeRect(w.x, w.bottom, w.width, canvas.height - w.bottom + 5);
             });
 
-            // Stars & Obstacles
-            ctx.shadowBlur = 0;
+            // Stars
             world.stars.forEach(s => {
-                if (s.collected || s.x < cameraX - 50 || s.x > cameraX + canvas.width + 50) return;
+                if (s.collected || s.x < cameraX - 50) return;
                 ctx.fillStyle = '#fbbf24';
                 ctx.beginPath();
                 for(let i=0; i<5; i++) ctx.lineTo(s.x + Math.cos(i*Math.PI*0.8)*12, s.y + Math.sin(i*Math.PI*0.8)*12);
                 ctx.closePath(); ctx.fill();
             });
 
+            // Saws
             world.obstacles.forEach(o => {
-                if (o.x < cameraX - 50 || o.x > cameraX + canvas.width + 50) return;
+                if (o.x < cameraX - 50) return;
                 ctx.save();
-                ctx.translate(o.x, o.y);
-                ctx.rotate(o.rot);
+                ctx.translate(o.x, o.y); ctx.rotate(o.rot);
                 ctx.fillStyle = '#fff';
                 ctx.beginPath();
-                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6));
+                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.65), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.65));
                 ctx.closePath(); ctx.fill();
                 ctx.restore();
             });
 
-            // Particles
-            particles.forEach(p => {
-                ctx.globalAlpha = Math.max(0, p.life);
-                ctx.fillStyle = p.color;
-                ctx.fillRect(p.x, p.y, p.size, p.size);
-            });
-            ctx.globalAlpha = 1;
-
-            // Player Trail
+            // Trail
             if (player.trail.length > 1) {
-                ctx.beginPath();
-                ctx.strokeStyle = '#fff';
-                ctx.lineWidth = 3;
+                ctx.beginPath(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
                 ctx.moveTo(player.trail[0].x, player.trail[0].y);
                 player.trail.forEach(pt => ctx.lineTo(pt.x, pt.y));
                 ctx.stroke();
@@ -427,74 +331,57 @@
 
             // Player
             if (state !== 'END') {
-                ctx.save();
-                ctx.translate(player.x, player.y);
-                ctx.rotate(player.isPressing ? -Math.PI/4 : Math.PI/4);
+                ctx.save(); ctx.translate(player.x, player.y);
+                ctx.rotate(player.isPressing ? -0.5 : 0.5);
                 ctx.fillStyle = '#fff';
-                ctx.beginPath();
-                ctx.moveTo(config.playerSize*1.5, 0);
-                ctx.lineTo(-config.playerSize, -config.playerSize);
-                ctx.lineTo(-config.playerSize, config.playerSize);
-                ctx.closePath(); ctx.fill();
+                ctx.beginPath(); ctx.moveTo(config.playerSize*1.5, 0); ctx.lineTo(-config.playerSize, -config.playerSize); ctx.lineTo(-config.playerSize, config.playerSize); ctx.closePath(); ctx.fill();
                 ctx.restore();
             }
-
             ctx.restore();
         }
 
         function lerpColor(a, b, amount) {
-            const hex = (x) => x.toString(16).padStart(2, '0');
+            const h = (x) => x.toString(16).padStart(2, '0');
             const r1 = parseInt(a.slice(1, 3), 16), g1 = parseInt(a.slice(3, 5), 16), b1 = parseInt(a.slice(5, 7), 16);
             const r2 = parseInt(b.slice(1, 3), 16), g2 = parseInt(b.slice(3, 5), 16), b2 = parseInt(b.slice(5, 7), 16);
-            const r = Math.round(r1 + (r2 - r1) * amount);
-            const g = Math.round(g1 + (g2 - g1) * amount);
-            const bl = Math.round(b1 + (b2 - b1) * amount);
-            return `#${hex(r)}${hex(g)}${hex(bl)}`;
+            return `#${h(Math.round(r1 + (r2 - r1) * amount))}${h(Math.round(g1 + (g2 - g1) * amount))}${h(Math.round(b1 + (b2 - b1) * amount))}`;
         }
 
-        const handleInput = (val) => {
-            if (state === 'PLAYING') {
-                player.isPressing = val;
-                if (val) audio.playPulse();
-            }
-        };
-
-        // Events
-        window.addEventListener('mousedown', () => handleInput(true));
-        window.addEventListener('mouseup', () => handleInput(false));
-        window.addEventListener('touchstart', (e) => { e.preventDefault(); audio.init(); handleInput(true); }, {passive: false});
-        window.addEventListener('touchend', (e) => { e.preventDefault(); handleInput(false); }, {passive: false});
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') handleInput(true); });
-        window.addEventListener('keyup', (e) => { if (e.code === 'Space') handleInput(false); });
-
-        ui.startBtn.onclick = (e) => {
-            e.stopPropagation();
+        // --- Interaction Setup ---
+        const startSequence = () => {
+            if (state !== 'START' && state !== 'END') return;
             audio.init();
-            state = 'PLAYING';
             reset();
+            state = 'PLAYING';
             ui.start.classList.add('hidden');
-            ui.hud.style.opacity = '1';
-        };
-
-        ui.restartBtn.onclick = (e) => {
-            e.stopPropagation();
-            state = 'PLAYING';
-            reset();
             ui.end.classList.add('hidden');
             ui.hud.style.opacity = '1';
         };
 
-        function loop() {
-            update();
-            draw();
-            requestAnimationFrame(loop);
-        }
+        // UI Buttons
+        ui.startBtn.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            startSequence();
+        });
+        ui.restartBtn.addEventListener('pointerdown', (e) => {
+            e.stopPropagation();
+            startSequence();
+        });
 
-        window.onload = () => {
-            resize();
-            reset();
-            loop();
-        };
+        // Global Input
+        window.addEventListener('pointerdown', (e) => {
+            if (state === 'PLAYING') {
+                player.isPressing = true;
+                audio.playPulse();
+            }
+        });
+        window.addEventListener('pointerup', () => player.isPressing = false);
+        window.addEventListener('keydown', (e) => { if (e.code === 'Space') { player.isPressing = true; audio.playPulse(); } });
+        window.addEventListener('keyup', (e) => { if (e.code === 'Space') player.isPressing = false; });
+
+        function loop() { update(); draw(); requestAnimationFrame(loop); }
+
+        window.onload = () => { resize(); reset(); loop(); };
         window.addEventListener('resize', resize);
     </script>
 </body>
