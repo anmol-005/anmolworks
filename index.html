@@ -2,441 +2,216 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Wave Dash: Level Master</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Anmol Kansal | Data Science & AI/ML</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        body {
-            margin: 0;
-            overflow: hidden;
-            background-color: #050505;
-            font-family: 'Inter', system-ui, -apple-system, sans-serif;
-            touch-action: none;
-            user-select: none;
-            -webkit-user-select: none;
-            color: white;
-            width: 100vw;
-            height: 100vh;
-        }
-        canvas { display: block; width: 100%; height: 100%; }
-        .font-game { font-family: 'Arial Black', Gadget, sans-serif; }
-        
-        .interactive { pointer-events: auto; }
-        
-        .level-card {
-            transition: all 0.2s;
-        }
-        .level-card:not(.locked):active { transform: scale(0.9); }
-        .level-card.locked { opacity: 0.3; filter: grayscale(1); pointer-events: none; }
-
-        #countdown {
-            text-shadow: 0 0 30px rgba(255,255,255,0.5);
-            animation: bounce 1s infinite;
-        }
-
-        @keyframes bounce {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.2); }
-        }
-
-        .setting-btn.active {
-            background-color: white;
-            color: black;
-            box-shadow: 0 0 15px rgba(255,255,255,0.5);
-        }
+        .skill-card:hover { transform: translateY(-5px); transition: all 0.3s ease; }
+        html { scroll-behavior: smooth; }
     </style>
 </head>
-<body class="bg-black">
+<body class="bg-[#f8fafc] text-slate-900 font-sans">
 
-    <!-- UI Layer -->
-    <div id="ui-layer" class="fixed inset-0 z-50 pointer-events-none flex flex-col items-center justify-center">
-        
-        <!-- HUD -->
-        <div id="hud" class="absolute top-8 left-0 w-full px-6 flex justify-between items-start opacity-0 transition-opacity">
-            <div class="flex flex-col">
-                <span id="level-indicator" class="text-xs font-bold tracking-widest uppercase opacity-70">Level 1</span>
-                <div class="w-32 h-1 bg-white/10 rounded-full mt-1 overflow-hidden">
-                    <div id="progress-bar" class="h-full bg-white w-0 shadow-[0_0_10px_#fff]"></div>
-                </div>
-                <span id="progress-text" class="text-[10px] mt-1 font-mono">0%</span>
+    <nav class="fixed w-full z-50 bg-white/90 backdrop-blur-md border-b border-slate-200">
+        <div class="max-w-6xl mx-auto px-6 py-4 flex justify-between items-center">
+            <span class="font-black text-2xl tracking-tighter text-indigo-600">ANMOL KANSAL.</span>
+            <div class="hidden md:flex space-x-8 text-sm font-bold uppercase tracking-widest text-slate-500">
+                <a href="#about" class="hover:text-indigo-600">About</a>
+                <a href="#skills" class="hover:text-indigo-600">Skills</a>
+                <a href="#experience" class="hover:text-indigo-600">Experience</a>
+                <a href="#education" class="hover:text-indigo-600">Education</a>
+                <a href="#projects" class="hover:text-indigo-600">Projects</a>
             </div>
-            <div class="text-right">
-                <span class="text-[10px] uppercase tracking-widest opacity-50 font-bold">Best</span>
-                <div id="best-score" class="text-lg font-game italic">0%</div>
+            <a href="mailto:anmolkansal1805@gmail.com" class="bg-indigo-600 text-white px-5 py-2 rounded-full text-sm font-bold hover:bg-indigo-700 transition">Hire Me</a>
+        </div>
+    </nav>
+
+    <section id="about" class="pt-40 pb-24 px-6">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-12 items-center">
+            <div>
+                <h1 class="text-6xl font-black leading-tight mb-6">Turning Data into <span class="text-indigo-600 underline decoration-indigo-200">Insights.</span></h1>
+                <p class="text-xl text-slate-600 leading-relaxed mb-8">
+                    Hi, I'm <span class="font-bold text-slate-900">Anmol Kansal</span>. I build intelligent backend systems and data-driven solutions. Currently specializing in 
+                    <span class="text-indigo-600 font-semibold">Generative AI, LLM Orchestration, and Predictive Analytics.</span>
+                </p>
+                <div class="flex gap-4">
+                    <a href="#projects" class="bg-slate-900 text-white px-8 py-4 rounded-xl font-bold hover:bg-slate-800 transition">View My Work</a>
+                    <a href="#contact" class="border-2 border-slate-200 px-8 py-4 rounded-xl font-bold hover:bg-slate-50 transition">Contact</a>
+                </div>
+            </div>
+            <div class="bg-indigo-50 p-8 rounded-[40px] border border-indigo-100">
+                <div class="grid grid-cols-2 gap-4 text-center">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <p class="text-3xl font-bold text-indigo-600">2000+</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase">Connections</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <p class="text-3xl font-bold text-indigo-600">Top 8%</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase">Kaggle Rank</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <p class="text-3xl font-bold text-indigo-600">2</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase">Degrees</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm">
+                        <p class="text-3xl font-bold text-indigo-600">1</p>
+                        <p class="text-xs font-bold text-slate-400 uppercase">GenAI Intern</p>
+                    </div>
+                </div>
             </div>
         </div>
+    </section>
 
-        <!-- Start/Menu Screen -->
-        <div id="menu-screen" class="interactive flex flex-col items-center gap-6 text-center max-w-lg w-full px-4">
-            <h1 class="text-6xl md:text-8xl font-game italic tracking-tighter leading-none">WAVE DASH</h1>
+    <section id="skills" class="py-24 bg-white">
+        <div class="max-w-6xl mx-auto px-6">
+            <h2 class="text-center text-sm font-black text-indigo-600 uppercase tracking-widest mb-4">The Stack</h2>
+            <h3 class="text-center text-4xl font-black mb-16">Technical Expertise</h3>
             
-            <!-- Speed Settings -->
-            <div class="flex gap-2 p-1 bg-white/5 rounded-full border border-white/10 mt-4">
-                <button data-speed="slow" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all">Slow</button>
-                <button data-speed="med" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all active">Medium</button>
-                <button data-speed="fast" class="setting-btn px-6 py-2 rounded-full text-xs font-bold uppercase transition-all">Fast</button>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-6">
+                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
+                    <i class="fab fa-python text-3xl text-indigo-600 mb-4"></i>
+                    <h4 class="font-bold mb-2">Languages</h4>
+                    <p class="text-sm text-slate-500">Python, Java, SQL (MySQL), JavaScript</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
+                    <i class="fas fa-brain text-3xl text-indigo-600 mb-4"></i>
+                    <h4 class="font-bold mb-2">AI/ML</h4>
+                    <p class="text-sm text-slate-500">Scikit-Learn, NLP, LLMs, Generative AI</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
+                    <i class="fas fa-server text-3xl text-indigo-600 mb-4"></i>
+                    <h4 class="font-bold mb-2">Backend</h4>
+                    <p class="text-sm text-slate-500">Flask, FastAPI, LangChain, Celery, Redis</p>
+                </div>
+                <div class="p-6 bg-slate-50 rounded-2xl border border-slate-100 skill-card">
+                    <i class="fas fa-chart-line text-3xl text-indigo-600 mb-4"></i>
+                    <h4 class="font-bold mb-2">Analysis</h4>
+                    <p class="text-sm text-slate-500">Pandas, NumPy, EDA, Feature Engineering</p>
+                </div>
             </div>
+        </div>
+    </section>
 
-            <div class="grid grid-cols-5 gap-3 mt-6 w-full max-h-[40vh] overflow-y-auto p-4 bg-white/5 rounded-2xl border border-white/10">
-                <!-- Levels populated by JS -->
-            </div>
+    <section class="py-24 px-6 bg-slate-50">
+        <div class="max-w-6xl mx-auto grid md:grid-cols-2 gap-16">
             
-            <p class="text-[10px] opacity-40 uppercase tracking-[0.2em] mt-2">Select a level to start sequence</p>
-        </div>
-
-        <!-- Countdown -->
-        <div id="countdown-layer" class="hidden">
-            <h1 id="countdown-text" class="text-9xl font-game italic">3</h1>
-        </div>
-
-        <!-- End Screen -->
-        <div id="end-screen" class="interactive hidden flex flex-col items-center gap-6 bg-white/5 backdrop-blur-xl p-10 rounded-3xl border border-white/10 shadow-2xl">
-            <h2 id="end-title" class="text-4xl font-game italic uppercase">CRASHED</h2>
-            <div class="flex gap-8 text-center">
-                <div>
-                    <p class="text-[10px] uppercase tracking-widest opacity-50">Level Progress</p>
-                    <p id="end-progress" class="text-3xl font-mono">0%</p>
-                </div>
-                <div>
-                    <p class="text-[10px] uppercase tracking-widest opacity-50">Stars</p>
-                    <p id="end-stars" class="text-3xl font-mono text-yellow-400">0</p>
+            <div id="experience">
+                <h3 class="text-3xl font-black mb-10 flex items-center gap-3">
+                    <span class="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-lg"><i class="fas fa-briefcase"></i></span>
+                    Experience
+                </h3>
+                <div class="space-y-8 border-l-2 border-indigo-100 pl-8">
+                    <div class="relative">
+                        <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-indigo-600 border-4 border-white"></div>
+                        <p class="text-xs font-black text-indigo-600 uppercase mb-1">Sep 2025 — Nov 2025</p>
+                        <h4 class="text-xl font-bold">GenAI Backend Intern</h4>
+                        <p class="text-slate-500 font-medium mb-3 italic">Infosys Springboard</p>
+                        <p class="text-sm text-slate-600">Built a real-time competitor tracker using Python & FastAPI. Implemented GenAI logic to process dynamic market data.</p>
+                    </div>
+                    <div class="relative">
+                        <div class="absolute -left-[41px] top-0 w-4 h-4 rounded-full bg-slate-300 border-4 border-white"></div>
+                        <p class="text-xs font-black text-slate-400 uppercase mb-1">Jan 2024 — Aug 2024</p>
+                        <h4 class="text-xl font-bold">Group Leader</h4>
+                        <p class="text-slate-500 font-medium mb-3 italic">IIT Madras (Kanha House)</p>
+                        <p class="text-sm text-slate-600">Led a team of students in a remote environment, fostering leadership and collaborative technical management.</p>
+                    </div>
                 </div>
             </div>
-            <div class="flex gap-4 w-full">
-                <button id="menu-btn" class="flex-1 py-4 bg-white/10 text-white font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Menu</button>
-                <button id="retry-btn" class="flex-[2] py-4 bg-white text-black font-bold rounded-xl active:scale-95 transition-transform uppercase text-xs tracking-widest">Retry Level</button>
+
+            <div id="education">
+                <h3 class="text-3xl font-black mb-10 flex items-center gap-3">
+                    <span class="w-10 h-10 bg-indigo-600 text-white rounded-lg flex items-center justify-center text-lg"><i class="fas fa-graduation-cap"></i></span>
+                    Education
+                </h3>
+                <div class="space-y-8">
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold">Indian Institute of Technology, Madras</h4>
+                        <p class="text-indigo-600 text-sm font-bold">Bachelor of Science - BS, Data Science</p>
+                        <p class="text-slate-400 text-xs mt-1">2023 — 2027</p>
+                    </div>
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                        <h4 class="text-lg font-bold">GKCIET</h4>
+                        <p class="text-indigo-600 text-sm font-bold">BTech, CSE (AI-ML)</p>
+                        <p class="text-slate-400 text-xs mt-1">2023 — Present | Grade: 8.2</p>
+                    </div>
+                </div>
             </div>
+
         </div>
-    </div>
+    </section>
 
-    <canvas id="gameCanvas"></canvas>
-
-    <script>
-        /** AUDIO ENGINE **/
-        class SoundEngine {
-            constructor() { this.ctx = null; this.enabled = false; }
-            init() {
-                if (this.ctx) return;
-                try {
-                    const AudioContext = window.AudioContext || window.webkitAudioContext;
-                    this.ctx = new AudioContext();
-                    this.enabled = true;
-                } catch (e) {}
-            }
-            playTone(freq, type = 'sine', duration = 0.1, gain = 0.1) {
-                if (!this.enabled || !this.ctx) return;
-                const osc = this.ctx.createOscillator();
-                const g = this.ctx.createGain();
-                osc.type = type;
-                osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
-                g.gain.setValueAtTime(gain, this.ctx.currentTime);
-                g.gain.exponentialRampToValueAtTime(0.0001, this.ctx.currentTime + duration);
-                osc.connect(g); g.connect(this.ctx.destination);
-                osc.start(); osc.stop(this.ctx.currentTime + duration);
-            }
-            playHit() { this.playTone(100, 'square', 0.4, 0.1); }
-            playStar() { this.playTone(900, 'sine', 0.2, 0.05); }
-            playPulse() { this.playTone(80, 'triangle', 0.1, 0.1); }
-            playTick() { this.playTone(440, 'sine', 0.05, 0.05); }
-        }
-
-        const audio = new SoundEngine();
-
-        // Game State
-        const canvas = document.getElementById('gameCanvas');
-        const ctx = canvas.getContext('2d');
-        const ui = {
-            hud: document.getElementById('hud'),
-            menu: document.getElementById('menu-screen'),
-            end: document.getElementById('end-screen'),
-            countdownLayer: document.getElementById('countdown-layer'),
-            countdownText: document.getElementById('countdown-text'),
-            levelGrid: document.querySelector('.grid'),
-            speedBtns: document.querySelectorAll('.setting-btn'),
-            levelIndicator: document.getElementById('level-indicator'),
-            progressBar: document.getElementById('progress-bar'),
-            progressText: document.getElementById('progress-text'),
-            bestScore: document.getElementById('best-score'),
-            endTitle: document.getElementById('end-title'),
-            endProgress: document.getElementById('end-progress'),
-            endStars: document.getElementById('end-stars'),
-            retryBtn: document.getElementById('retry-btn'),
-            menuBtn: document.getElementById('menu-btn')
-        };
-
-        const config = {
-            speeds: { slow: 4.5, med: 6.5, fast: 9 },
-            playerSize: 12,
-            colors: ['#3b82f6', '#8b5cf6', '#ec4899', '#f43f5e', '#f59e0b', '#10b981']
-        };
-
-        let state = 'MENU';
-        let currentLevel = 1;
-        let selectedSpeed = 'med';
-        let maxLevelReached = parseInt(localStorage.getItem('wave_dash_max_level')) || 1;
-        let bestScores = JSON.parse(localStorage.getItem('wave_dash_bests')) || {};
-
-        let cameraX = 0;
-        let starsCollected = 0;
-        let player = { x: 150, y: 0, isPressing: false, trail: [] };
-        let world = { walls: [], obstacles: [], stars: [], bgColor: config.colors[0] };
-
-        // Initialize Level Grid
-        function initLevelGrid() {
-            ui.levelGrid.innerHTML = '';
-            for (let i = 1; i <= 25; i++) {
-                const isLocked = i > maxLevelReached;
-                const best = bestScores[i] || 0;
-                const card = document.createElement('div');
-                card.className = `level-card flex flex-col items-center justify-center p-4 rounded-xl border border-white/10 bg-white/5 cursor-pointer ${isLocked ? 'locked' : ''}`;
-                card.innerHTML = `
-                    <span class="text-xs font-game italic opacity-50">${i}</span>
-                    <span class="text-[10px] font-mono mt-1">${best}%</span>
-                `;
-                card.onclick = () => { if (!isLocked) startCountdown(i); };
-                ui.levelGrid.appendChild(card);
-            }
-        }
-
-        function resize() {
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            if (state === 'MENU') player.y = canvas.height / 2;
-        }
-
-        // Seeded Level Generation
-        function generateLevel(lvl) {
-            world.walls = []; world.obstacles = []; world.stars = [];
-            // Simple deterministic RNG
-            let seed = lvl * 1337;
-            const rand = () => { seed = (seed * 9301 + 49297) % 233280; return seed / 233280; };
-
-            let x = 0;
-            let currentGapY = canvas.height / 2;
-            const length = 5000 + lvl * 1000;
-            const baseGapSize = Math.max(150, canvas.height * 0.5 - (lvl * 5));
-
-            while (x < length + canvas.width) {
-                const width = 150 + rand() * 200;
-                currentGapY += (rand() - 0.5) * 200;
-                currentGapY = Math.max(canvas.height * 0.25, Math.min(canvas.height * 0.75, currentGapY));
+    <section id="projects" class="py-24 bg-white px-6">
+        <div class="max-w-6xl mx-auto">
+            <h2 class="text-center text-4xl font-black mb-16">Featured Projects</h2>
+            <div class="grid md:grid-cols-2 gap-10">
                 
-                const gapSize = baseGapSize * (1 - (x / length) * 0.3);
-                world.walls.push({ x, width, top: currentGapY - gapSize/2, bottom: currentGapY + gapSize/2 });
+                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
+                    <div class="p-8">
+                        <div class="flex justify-between items-start mb-4">
+                            <span class="bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full">Kaggle Competition</span>
+                            <span class="text-indigo-600 font-bold">Rank 147 / 1970</span>
+                        </div>
+                        <h3 class="text-2xl font-bold mb-4">Engage2Value: Clicks to Conversions</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Predicting customer purchase value from multi-session digital behavior. Handled real-world clickstream data, feature engineering, and hyperparameter tuning.</p>
+                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>#MachineLearning</span> <span>#ScikitLearn</span> <span>#EDA</span>
+                        </div>
+                        <a href="https://github.com/anmol-005/Engage2Value-From-Clicks-to-Conversions" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Case Study <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
 
-                if (x > 800) {
-                    if (rand() < 0.2 + (lvl * 0.02)) {
-                        world.obstacles.push({ x: x + width/2, y: currentGapY + (rand()-0.5)*(gapSize*0.6), r: 20 + rand()*10, rot: 0 });
-                    }
-                    if (rand() < 0.15) {
-                        world.stars.push({ x: x + width/4, y: currentGapY + (rand()-0.5)*(gapSize*0.75), collected: false });
-                    }
-                }
-                x += width;
-            }
-            return length;
-        }
+                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
+                    <div class="p-8">
+                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Full Stack</span>
+                        <h3 class="text-2xl font-bold mb-4">Influencer Platform v2</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Modern web app with Decoupled Architecture. Flask REST API, VueJS, and asynchronous tasks via Redis/Celery.</p>
+                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>#Flask</span> <span>#VueJS</span> <span>#Redis</span> <span>#Celery</span>
+                        </div>
+                        <a href="https://github.com/anmol-005/IESCP_V2" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Project <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
 
-        let levelLengthTotal = 0;
+                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
+                    <div class="p-8">
+                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Business Analytics</span>
+                        <h3 class="text-2xl font-bold mb-4">Retail Success & Inventory</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Applied ABC/Pareto analysis to real business data from Saawaria Fashion to optimize stock and revenue.</p>
+                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>#BusinessIntelligence</span> <span>#Forecasting</span>
+                        </div>
+                        <a href="#" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Report <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
 
-        function startCountdown(lvl) {
-            audio.init();
-            currentLevel = lvl;
-            state = 'COUNTDOWN';
-            ui.menu.classList.add('hidden');
-            ui.end.classList.add('hidden');
-            ui.countdownLayer.classList.remove('hidden');
-            
-            let count = 3;
-            ui.countdownText.innerText = count;
-            audio.playTick();
+                <div class="group overflow-hidden rounded-3xl border border-slate-100 bg-slate-50 transition hover:shadow-xl">
+                    <div class="p-8">
+                        <span class="bg-indigo-100 text-indigo-700 text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full mb-4 inline-block">Web Dev</span>
+                        <h3 class="text-2xl font-bold mb-4">Influencer Engagement v1</h3>
+                        <p class="text-slate-600 text-sm leading-relaxed mb-6">Monolithic application using Jinja2 and SQLAlchemy. The foundational version focusing on routing and ORM.</p>
+                        <div class="flex flex-wrap gap-2 mb-6 text-[10px] font-bold text-slate-400 uppercase">
+                            <span>#Jinja2</span> <span>#SQLAlchemy</span> <span>#Python</span>
+                        </div>
+                        <a href="https://github.com/anmol-005/IESPC" class="text-indigo-600 font-bold flex items-center gap-2 group-hover:gap-4 transition-all">View Legacy <i class="fas fa-arrow-right"></i></a>
+                    </div>
+                </div>
 
-            const timer = setInterval(() => {
-                count--;
-                if (count > 0) {
-                    ui.countdownText.innerText = count;
-                    audio.playTick();
-                } else if (count === 0) {
-                    ui.countdownText.innerText = "GO!";
-                    audio.playTick();
-                } else {
-                    clearInterval(timer);
-                    beginGame();
-                }
-            }, 800);
-        }
+            </div>
+        </div>
+    </section>
 
-        function beginGame() {
-            ui.countdownLayer.classList.add('hidden');
-            ui.hud.style.opacity = '1';
-            ui.levelIndicator.innerText = `Level ${currentLevel}`;
-            ui.bestScore.innerText = `${bestScores[currentLevel] || 0}%`;
-            
-            levelLengthTotal = generateLevel(currentLevel);
-            cameraX = 0;
-            starsCollected = 0;
-            player.x = 150;
-            player.y = canvas.height / 2;
-            player.trail = [];
-            player.isPressing = false;
-            state = 'PLAYING';
-        }
+    <footer id="contact" class="py-20 bg-slate-900 text-white text-center">
+        <div class="max-w-4xl mx-auto px-6">
+            <h2 class="text-4xl font-black mb-8">Ready to start a project?</h2>
+            <div class="flex justify-center gap-6 mb-12">
+                <a href="https://www.linkedin.com/in/anmolkansal2005" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fab fa-linkedin-in"></i></a>
+                <a href="https://github.com/anmol-005" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fab fa-github"></i></a>
+                <a href="mailto:anmolkansal1805@gmail.com" class="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center hover:bg-indigo-600 transition text-xl"><i class="fas fa-envelope"></i></a>
+            </div>
+            <p class="text-slate-500 font-medium">Built with <span class="text-indigo-500">Tailwind CSS</span> & Passion</p>
+        </div>
+    </footer>
 
-        function endGame(won) {
-            if (state === 'END') return;
-            state = 'END';
-            audio.playHit();
-            
-            const progress = Math.min(100, Math.floor((cameraX / levelLengthTotal) * 100));
-            if (progress > (bestScores[currentLevel] || 0)) {
-                bestScores[currentLevel] = progress;
-                localStorage.setItem('wave_dash_bests', JSON.stringify(bestScores));
-            }
-
-            if (won && currentLevel === maxLevelReached && maxLevelReached < 25) {
-                maxLevelReached++;
-                localStorage.setItem('wave_dash_max_level', maxLevelReached);
-            }
-
-            ui.hud.style.opacity = '0';
-            ui.end.classList.remove('hidden');
-            ui.endTitle.innerText = won ? "SYNC COMPLETE" : "CRASHED";
-            ui.endTitle.style.color = won ? "#4ade80" : "#f43f5e";
-            ui.endProgress.innerText = `${progress}%`;
-            ui.endStars.innerText = starsCollected;
-            
-            initLevelGrid(); // Refresh grid state
-        }
-
-        function update() {
-            if (state !== 'PLAYING') return;
-
-            const currentSpeed = config.speeds[selectedSpeed];
-            cameraX += currentSpeed;
-            player.x += currentSpeed;
-
-            player.y += player.isPressing ? -currentSpeed : currentSpeed;
-
-            if (player.y < 0 || player.y > canvas.height) { endGame(false); return; }
-
-            player.trail.push({ x: player.x, y: player.y });
-            if (player.trail.length > 30) player.trail.shift();
-
-            const cp = (cameraX / levelLengthTotal) * (config.colors.length - 1);
-            const cIdx = Math.max(0, Math.min(config.colors.length-2, Math.floor(cp)));
-            world.bgColor = lerpColor(config.colors[cIdx], config.colors[cIdx+1], cp % 1);
-
-            const wall = world.walls.find(w => player.x >= w.x && player.x <= w.x + w.width);
-            if (wall && (player.y < wall.top || player.y > wall.bottom)) { endGame(false); return; }
-
-            world.obstacles.forEach(o => {
-                o.rot += 0.1;
-                if (Math.hypot(player.x - o.x, player.y - o.y) < o.r + 5) endGame(false);
-            });
-
-            world.stars.forEach(s => {
-                if (!s.collected && Math.hypot(player.x - s.x, player.y - s.y) < 30) {
-                    s.collected = true; starsCollected++; audio.playStar();
-                }
-            });
-
-            const prog = Math.min(100, Math.floor((cameraX / levelLengthTotal) * 100));
-            ui.progressBar.style.width = prog + '%';
-            ui.progressText.innerText = prog + '%';
-            if (prog >= 100) endGame(true);
-        }
-
-        function draw() {
-            ctx.fillStyle = '#050505';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            const g = ctx.createRadialGradient(canvas.width/2, canvas.height/2, 0, canvas.width/2, canvas.height/2, canvas.height);
-            g.addColorStop(0, world.bgColor + '33');
-            g.addColorStop(1, '#000000');
-            ctx.fillStyle = g; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.save();
-            ctx.translate(-cameraX, 0);
-
-            // Walls
-            ctx.fillStyle = '#0a0a0a'; ctx.strokeStyle = '#fff'; ctx.lineWidth = 1;
-            world.walls.forEach(w => {
-                if (w.x + w.width < cameraX || w.x > cameraX + canvas.width) return;
-                ctx.fillRect(w.x, 0, w.width, w.top);
-                ctx.strokeRect(w.x, -5, w.width, w.top + 5);
-                ctx.fillRect(w.x, w.bottom, w.width, canvas.height - w.bottom);
-                ctx.strokeRect(w.x, w.bottom, w.width, canvas.height - w.bottom + 5);
-            });
-
-            // Stars
-            world.stars.forEach(s => {
-                if (s.collected || s.x < cameraX - 50) return;
-                ctx.fillStyle = '#fbbf24'; ctx.beginPath();
-                for(let i=0; i<5; i++) ctx.lineTo(s.x + Math.cos(i*Math.PI*0.8)*12, s.y + Math.sin(i*Math.PI*0.8)*12);
-                ctx.closePath(); ctx.fill();
-            });
-
-            // Saws
-            world.obstacles.forEach(o => {
-                if (o.x < cameraX - 50) return;
-                ctx.save(); ctx.translate(o.x, o.y); ctx.rotate(o.rot);
-                ctx.fillStyle = '#fff'; ctx.beginPath();
-                for(let i=0; i<16; i++) ctx.lineTo(Math.cos(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6), Math.sin(i*Math.PI/8)*(i%2==0?o.r:o.r*0.6));
-                ctx.closePath(); ctx.fill(); ctx.restore();
-            });
-
-            // Trail
-            if (player.trail.length > 1) {
-                ctx.beginPath(); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2;
-                ctx.moveTo(player.trail[0].x, player.trail[0].y);
-                player.trail.forEach(pt => ctx.lineTo(pt.x, pt.y));
-                ctx.stroke();
-            }
-
-            // Player
-            if (state === 'PLAYING') {
-                ctx.save(); ctx.translate(player.x, player.y);
-                ctx.rotate(player.isPressing ? -0.4 : 0.4);
-                ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.moveTo(config.playerSize*1.5, 0); ctx.lineTo(-config.playerSize, -config.playerSize); ctx.lineTo(-config.playerSize, config.playerSize); ctx.closePath(); ctx.fill();
-                ctx.restore();
-            }
-            ctx.restore();
-        }
-
-        function lerpColor(a, b, amount) {
-            const h = (x) => x.toString(16).padStart(2, '0');
-            const r1 = parseInt(a.slice(1, 3), 16), g1 = parseInt(a.slice(3, 5), 16), b1 = parseInt(a.slice(5, 7), 16);
-            const r2 = parseInt(b.slice(1, 3), 16), g2 = parseInt(b.slice(3, 5), 16), b2 = parseInt(b.slice(5, 7), 16);
-            return `#${h(Math.round(r1 + (r2 - r1) * amount))}${h(Math.round(g1 + (g2 - g1) * amount))}${h(Math.round(b1 + (b2 - b1) * amount))}`;
-        }
-
-        // Inputs
-        ui.speedBtns.forEach(btn => {
-            btn.onclick = () => {
-                ui.speedBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                selectedSpeed = btn.dataset.speed;
-            };
-        });
-
-        ui.retryBtn.onclick = () => startCountdown(currentLevel);
-        ui.menuBtn.onclick = () => {
-            state = 'MENU';
-            ui.end.classList.add('hidden');
-            ui.menu.classList.remove('hidden');
-        };
-
-        window.addEventListener('pointerdown', () => {
-            if (state === 'PLAYING') { player.isPressing = true; audio.playPulse(); }
-        });
-        window.addEventListener('pointerup', () => player.isPressing = false);
-        window.addEventListener('keydown', (e) => { if (e.code === 'Space') { player.isPressing = true; audio.playPulse(); } });
-        window.addEventListener('keyup', (e) => { if (e.code === 'Space') player.isPressing = false; });
-
-        function loop() { update(); draw(); requestAnimationFrame(loop); }
-        window.onload = () => { resize(); initLevelGrid(); loop(); };
-        window.addEventListener('resize', resize);
-    </script>
 </body>
-</html>
-
+    </html>
